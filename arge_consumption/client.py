@@ -1,12 +1,21 @@
 import os
 
+# 3rd party
 import requests as requests
+
 from requests.auth import HTTPBasicAuth
-from responses.consumption import ConsumptionResponse
-from responses.periods import PeriodResponse
+
+from arge_consumption import errors
+from arge_consumption.responses import ConsumptionSummary, ConsumptionData
 
 
 class HaweikoClient:
+    """Client to retrieve EED consumption data from a ARGE HeiWaKo API.
+
+    OpenAPI specification:
+        https://app.swaggerhub.com/apis-docs/m.duchene/arge-consumption/1.1
+    """
+
     def __init__(self, url: str, user: str, password: str):
         self.url = url
         self.auth = HTTPBasicAuth(user, password)
@@ -20,9 +29,24 @@ class HaweikoClient:
         )
 
     def _get(self, url):
-        return requests.get(url, auth=self.auth)
+        response = requests.get(url, auth=self.auth)
+        match response.status_code:
+            case 200:
+                return response
+            case 401:
+                raise errors.AutorizationFailure()
+            case 403:
+                raise errors.PermissionError()
+            case 404:
+                raise errors.NotFound()
+            case 500:
+                raise errors.TechnicalError()
+            case 501:
+                raise errors.UnsopportedOperation()
+            case _:
+                raise Exception("Unsupported status code.")
 
-    def get_periods(self, msc_number: int) -> PeriodResponse:
+    def get_periods(self, msc_number: int) -> ConsumptionSummary:
         """Liste der verfügbaren Zeiträume abrufen
 
         Mit dieser Operation können die verfügbaren Perioden für eine Liegenschaft abgerufen werden.
@@ -35,18 +59,14 @@ class HaweikoClient:
         eines Updates für eine Periode kann dem Attribut „update“ entnommen.
         werden.
 
-        :param msc_number:
+        :param msc_number: Identifier der Liegenschaft
         """
         response = self._get(
             self.url + f"/billingunits/{msc_number}/consumptions/periods"
         )
-        if not response.status_code == 200:
-            raise Exception(
-                f"Invalid status code ({response.status_code}): {response.content}"
-            )
-        return PeriodResponse.parse_obj(response.json())
+        return ConsumptionSummary.parse_obj(response.json())
 
-    def get_consumptions(self, msc_number: int, period: str) -> ConsumptionResponse:
+    def get_consumptions(self, msc_number: int, period: str) -> ConsumptionData:
         """Liste der Verbräuche für eine Periode abrufen
 
         Mit dieser Operation können die Verbräuche aller Nutzeinheiten einer Liegenschaft für eine Periode abgefragt werden.
@@ -60,12 +80,11 @@ class HaweikoClient:
         Wird ein Verbrauch geschätzt, so ist dieser entsprechend gekennzeichnet.
         Ist eine Verbrauchsermittlung für einen vereinbarten Verbrauchstyp nicht möglich, wird für diesen
         Verbrauchstyp als Fehler gekennzeichnet
+
+        :param msc_number: Identifier der Liegenschaft
+        :param period: Abrechnungsperiode im Format MM-YYYY
         """
         response = self._get(
             self.url + f"/billingunits/{msc_number}/consumptions/periods/{period}"
         )
-        if not response.status_code == 200:
-            raise Exception(
-                f"Invalid status code ({response.status_code}): {response.content}"
-            )
-        return ConsumptionResponse.parse_obj(response.json())
+        return ConsumptionData.parse_obj(response.json())
