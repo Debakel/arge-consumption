@@ -9,6 +9,7 @@ pydantic = "*"
 
 [dev-packages]
 pre-commit = "*"
+flit = "*"
 
 [requires]
 python_version = "3.10"

@@ -1,0 +1,10 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "arge_consumption"
+authors = [{name = "Moritz Duchêne", email = "mail@mrtz.me"}]
+readme = "README.md"
+dynamic = ["version", "description"]
+repository = "https://github.com/Debakel/arge-consumption"
