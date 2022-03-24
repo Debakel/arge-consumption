@@ -2,11 +2,10 @@ import os
 
 # 3rd party
 import requests as requests
-
 from requests.auth import HTTPBasicAuth
 
 from arge_consumption import errors
-from arge_consumption.responses import ConsumptionSummary, ConsumptionData
+from arge_consumption.responses import ConsumptionData, ConsumptionSummary
 
 
 class HaweikoClient:
@@ -44,7 +43,9 @@ class HaweikoClient:
             case 501:
                 raise errors.UnsopportedOperation()
             case _:
-                raise Exception("Unsupported status code.")
+                raise errors.UnsupportedResponse(
+                    status_code=response.status_code, message=response.content
+                )
 
     def get_periods(self, msc_number: int) -> ConsumptionSummary:
         """Liste der verfügbaren Zeiträume abrufen
