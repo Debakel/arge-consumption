@@ -1,6 +1,9 @@
 name: Code Quality
 
-on: push
+on:
+  - push
+  - workflow_dispatch
+
 
 jobs:
   pre-commit:
