@@ -31,8 +31,7 @@ class UnsopportedOperation(ArgeError):
 
 
 class UnsupportedResponse(Exception):
-    """Raised if the API returned an unsupported response (which is not defined in the ARGE HAWEIKO spec)
-    """
+    """Raised if the API returned an unsupported response (which is not defined in the ARGE HAWEIKO spec)"""
 
     def __init__(self, status_code: int, message: str):
         self.status_code = status_code
