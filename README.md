@@ -2,9 +2,9 @@
 Python Client zum Abruf unterjähriger Verbrauchsinformationen über die *ARGE consumption-data API*.
 
 ## Installation
- 
+
     pip install arge-consumption
-   
+
 ## Hintergrund
 
 Im Rahmen der [EED](https://de.wikipedia.org/wiki/Richtlinie_2012/27/EU_(Energieeffizienz-Richtlinie)) veröffentlicht die [ARGE HeiWaKo](https://arge-heiwako.de/) einen Webservice mit dem monatliche Verbrauchsdaten auf Nutzeinheitenebene vom Wärmedienstunternehmen abgerufen werden können.
