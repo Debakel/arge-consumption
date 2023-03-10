@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "arge_consumption"
-version = "1.0.1"
+version = "1.0.2"
 readme = "README.md"
 description = "Python Client zum Abruf unterjähriger Verbrauchsinformationen über die *ARGE consumption-data API*."
 authors = ["Moritz Duchêne <2857237+Debakel@users.noreply.github.com>"]
